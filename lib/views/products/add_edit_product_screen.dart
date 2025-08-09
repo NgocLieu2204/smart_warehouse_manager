@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+
 import 'package:intl/intl.dart';
 import 'package:smart_warehouse_manager/models/product_model.dart';
 
@@ -28,14 +28,7 @@ class _AddEditProductScreenState extends State<AddEditProductScreen> {
     }
   }
 
-  Future<void> _scanBarcode() async {
-    String barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
-        '#ff6666', 'Cancel', true, ScanMode.BARCODE);
-    if (!mounted) return;
-    setState(() {
-      _barcodeController.text = barcodeScanRes;
-    });
-  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -54,16 +47,7 @@ class _AddEditProductScreenState extends State<AddEditProductScreen> {
                   decoration: const InputDecoration(labelText: 'Product Name'),
                   validator: (value) => value!.isEmpty ? 'Please enter a name' : null,
               ),
-              TextFormField(
-                  controller: _barcodeController,
-                  decoration: InputDecoration(
-                      labelText: 'Barcode/QR Code',
-                      suffixIcon: IconButton(
-                          icon: const Icon(Icons.camera_alt),
-                          onPressed: _scanBarcode,
-                      ),
-                  ),
-              ),
+              
               ListTile(
                   title: Text("Expiry Date: ${DateFormat.yMd().format(_selectedDate)}"),
                   trailing: const Icon(Icons.calendar_today),
