@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:provider/provider.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:smart_warehouse_manager/services/auth_service.dart';
-import 'package:smart_warehouse_manager/views/auth/login_screen.dart';
-import 'package:smart_warehouse_manager/views/dashboard/dashboard_screen.dart';
 import 'firebase_options.dart';
+
+import 'repositories/auth_repository.dart';
+import 'blocs/auth/auth_bloc.dart';
+import 'blocs/auth/auth_state.dart';
+import 'views/auth/login_screen.dart';
+import 'views/dashboard/dashboard_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,9 +22,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamProvider<User?>.value(
-      value: AuthService().user,
-      initialData: null,
+    final authRepository = AuthRepository();
+
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AuthBloc>(
+          create: (_) => AuthBloc(authRepository),
+        ),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
@@ -40,13 +47,18 @@ class AuthWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<User?>(context);
-
-    // Nếu user đã đăng nhập, hiển thị DashboardScreen, ngược lại hiển thị LoginScreen
-    if (user == null) {
-      return const LoginScreen();
-    } else {
-      return const DashboardScreen();
-    }
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, state) {
+        if (state is AuthAuthenticated) {
+          return const DashboardScreen();
+        } else if (state is AuthLoading) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        } else {
+          return const LoginPage();
+        }
+      },
+    );
   }
 }

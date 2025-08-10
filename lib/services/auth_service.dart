@@ -3,47 +3,38 @@ import 'package:firebase_auth/firebase_auth.dart';
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // Lấy trạng thái đăng nhập của user
-  Stream<User?> get user => _auth.authStateChanges();
+  /// Lấy trạng thái đăng nhập của user (stream realtime)
+  Stream<User?> get authState => _auth.authStateChanges();
 
-  // Đăng nhập bằng Email & Password
-  Future<User?> signInWithEmailAndPassword(String email, String password) async {
-    try {
-      UserCredential result = await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      User? user = result.user;
-
-      // In token sau khi đăng nhập thành công
-      if (user != null) {
-        String? token = await user.getIdToken();
-        print('User Token: $token');
-      }
-
-      return user;
-    } catch (e) {
-      print('Login Error: ${e.toString()}');
-      return null;
-    }
+  /// Đăng nhập bằng Email & Password, trả về UserCredential
+  Future<UserCredential> signIn(String email, String password) async {
+    return await _auth.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
   }
 
-  // Đăng ký bằng Email & Password
-  Future<User?> registerWithEmailAndPassword(String email, String password) async {
-    try {
-      UserCredential result = await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      return result.user;
-    } catch (e) {
-      print('Register Error: ${e.toString()}');
-      return null;
-    }
+  /// Đăng ký tài khoản mới
+  Future<UserCredential> register(String email, String password) async {
+    return await _auth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
   }
 
-  // Đăng xuất
+  /// Đăng xuất
   Future<void> signOut() async {
-    await _auth.signOut();
+    return await _auth.signOut();
+  }
+
+  /// Lấy token hiện tại của user (nếu có)
+  Future<String?> getIdToken() async {
+    final user = _auth.currentUser;
+    return user != null ? await user.getIdToken() : null;
+  }
+
+  /// Lấy user hiện tại (nếu có)
+  User? getCurrentUser() {
+    return _auth.currentUser;
   }
 }
