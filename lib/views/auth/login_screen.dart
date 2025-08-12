@@ -3,10 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/auth/auth_event.dart';
 import '../../blocs/auth/auth_state.dart';
-import '../../repositories/auth_repository.dart';
-import '../../views/dashboard/dashboard_screen.dart';
-import '../../views/auth/register_screen.dart';
-// Assuming button.dart is now in lib/widgets/
+import 'register_screen.dart';
 import '../../widgets/buttton.dart';
 
 class LoginPage extends StatefulWidget {
@@ -23,23 +20,19 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => AuthBloc(AuthRepository()),
-      child: Scaffold(
-        backgroundColor: const Color(0xFFE0E5EC), // Neumorphism background color
-        body: BlocConsumer<AuthBloc, AuthState>(
-          listener: (context, state) {
-            if (state is AuthAuthenticated) {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (_) => const DashboardScreen()),
-              );
-            }
-            if (state is AuthError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.message ?? 'An error occurred')),
-              );
-            }
-          },
+    // XÓA BỎ BlocProvider ở đây
+    return Scaffold(
+      backgroundColor: const Color(0xFFE0E5EC),
+      body: BlocListener<AuthBloc, AuthState>(
+        listener: (context, state) {
+          // Chỉ cần hiển thị lỗi, AuthWrapper sẽ tự điều hướng
+          if (state is AuthError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.message ?? 'An error occurred')),
+            );
+          }
+        },
+        child: BlocBuilder<AuthBloc, AuthState>(
           builder: (context, state) {
             bool isLoading = state is AuthLoading;
 
@@ -52,17 +45,15 @@ class _LoginPageState extends State<LoginPage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        // Logo
                         CircleAvatar(
                           radius: 40,
                           backgroundColor: Colors.transparent,
                           child: ClipOval(
                             child: Image.asset(
                               'assets/warehouse_logo.png',
-                              // *** THAY ĐỔI Ở ĐÂY ***
-                              fit: BoxFit.contain, // Đổi từ .cover sang .contain
-                              width: 300,
-                              height: 300,
+                              fit: BoxFit.contain,
+                              width: 80,
+                              height: 80,
                             ),
                           ),
                         ),
@@ -81,8 +72,6 @@ class _LoginPageState extends State<LoginPage> {
                           style: TextStyle(fontSize: 16, color: Colors.blueGrey),
                         ),
                         const SizedBox(height: 50),
-
-                        // Username/Email Text Field
                         _buildNeumorphicTextField(
                           controller: _emailController,
                           hintText: 'username',
@@ -90,8 +79,6 @@ class _LoginPageState extends State<LoginPage> {
                           validator: (val) => val!.isEmpty ? 'Please enter an email' : null,
                         ),
                         const SizedBox(height: 25),
-
-                        // Password Text Field
                         _buildNeumorphicTextField(
                           controller: _passwordController,
                           hintText: 'password',
@@ -102,14 +89,13 @@ class _LoginPageState extends State<LoginPage> {
                               : null,
                         ),
                         const SizedBox(height: 40),
-
-                        // Login Button
                         if (isLoading)
                           const CircularProgressIndicator()
                         else
                           NeumorphicButton(
                             onTap: () {
                               if (_formKey.currentState!.validate()) {
+                                // Gửi sự kiện đến AuthBloc TOÀN CỤC
                                 context.read<AuthBloc>().add(
                                       LoginRequested(
                                         username: _emailController.text.trim(),
@@ -129,8 +115,6 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                         const SizedBox(height: 30),
-
-                        // Footer text
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -168,7 +152,6 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // Widget builder for Neumorphic Text Fields
   Widget _buildNeumorphicTextField({
     required TextEditingController controller,
     required String hintText,
@@ -187,7 +170,7 @@ class _LoginPageState extends State<LoginPage> {
             blurRadius: 10,
             spreadRadius: 0,
           ),
-           BoxShadow(
+          BoxShadow(
             color: Color.fromRGBO(163, 177, 198, 0.9),
             offset: Offset(5, 5),
             blurRadius: 10,

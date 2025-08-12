@@ -15,6 +15,7 @@ class ProductBloc extends Bloc<ProductEvent,ProductState> {
     on<DeleteProduct>(_onDeleteProduct);
   }
   
+  
   Future<void> _onLoadProducts(LoadProducts event, Emitter<ProductState> emit) async {
     emit(ProductLoading());
     try {
@@ -26,8 +27,6 @@ class ProductBloc extends Bloc<ProductEvent,ProductState> {
       emit(ProductError(e.toString()));
     }
   }
-  
-
 
   Future<void> _onAddProduct(AddProduct event, Emitter<ProductState> emit) async {
     emit(ProductLoading());
