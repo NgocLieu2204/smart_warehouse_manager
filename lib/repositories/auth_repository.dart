@@ -40,6 +40,24 @@ class AuthRepository {
             throw Exception('Registration failed: $e');
         }
     }
+    Future<User?> loginWithGoogle() async {
+      try {
+        final GoogleAuthProvider googleProvider = GoogleAuthProvider();
+        UserCredential userCredential = await _auth.signInWithPopup(googleProvider);
+        return userCredential.user;
+      } catch (e) {
+        throw Exception('Google login failed: $e');
+      }
+    }
+    Future<User?> loginWithFacebook() async {
+      try {
+        final FacebookAuthProvider facebookProvider = FacebookAuthProvider();
+        UserCredential userCredential = await _auth.signInWithPopup(facebookProvider);
+        return userCredential.user;
+      } catch (e) {
+        throw Exception('Facebook login failed: $e');
+      }   
+    }
     Future<String?> getCurrentUserToken() async {
     final user = _auth.currentUser;
     if (user != null) {

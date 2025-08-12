@@ -14,6 +14,9 @@ class RegisterRequested extends AuthEvent {
   RegisterRequested({required this.username, required this.password});
 }
 
+class LoginWithGoogleRequested extends AuthEvent {}
+class LoginWithFacebookRequested extends AuthEvent {}
+
 // Event for requesting logout
 class LogoutRequested extends AuthEvent {}
 
