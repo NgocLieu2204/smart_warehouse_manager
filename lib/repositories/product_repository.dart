@@ -11,7 +11,7 @@ class ProductRepository {
   Future<List<Product>> getAllProducts() async {
     // Fetch all products from the API
     try {
-      final response = await _dio.get('/products');
+      final response = await _dio.get('/products/getAllProduct');
       final List<dynamic> data = response.data;
       return data.map((item) => Product.fromJson(item)).toList();
     } catch (e) {

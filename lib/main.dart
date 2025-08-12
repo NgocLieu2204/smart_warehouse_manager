@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
     final authRepository = AuthRepository();
     final productRepo = ProductRepository(
       Dio(BaseOptions(
-        baseUrl: "http://localhost:5000", // Đổi theo môi trường chạy
+        baseUrl: "http://10.0.2.2:5000", // Đổi theo môi trường chạy
       )),
     );
 
